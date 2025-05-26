@@ -35,7 +35,7 @@ uint8_t fontset[80] = {
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-typedef struct
+typedef struct chip8_t
 {
     uint8_t memory[4096]; //mem
     uint8_t V[16]; //registers
@@ -49,47 +49,11 @@ typedef struct
     uint8_t sound_timer;
 } chip8_t;
 
-typedef void (*instruction_func)(chip8_t* chip8, uint16_t opcode); //pointer to a instruction function
-instruction_func instructions[INST_COUNT] = {
-    clr, //0
-    ret, //1
-    jpaddr, // .2
-    call, // 3
-    se, // 4
-    sne, // 5
-    sre, // 6
-    load, //7
-    add, //8
-    loadr, //9
-    or, //10
-    and, //11
-    xor, //12
-    addxy, //13
-    sub, //14
-    shr, //15
-    subn, //16
-    shl, //17
-    sne, //18
-    loadI, // 19
-    jmp, //20
-    rnd, //21 
-    draw, //22
-    skip,//23
-    skip_not,//24
-    loadDT,//25
-    loadKey,//26
-    setDT,//27
-    setST,//28
-    addI,//29
-    loadF,//30
-    loadB,//31
-    readRegs,//32
-    writeRegs //33
-};
+
 
 static inline void clr(chip8_t* chip8, uint16_t opcode){
     for (int i = 0; i < 2048; i++)
-        chip8->V[i] = 0;
+        chip8->display[i] = 0;
 }
 
 static inline void ret(chip8_t* chip8, uint16_t opcode) {chip8->pc = chip8->stack[chip8->sp];}
@@ -198,14 +162,52 @@ static inline void loadB(chip8_t* chip8, uint16_t opcode){
 }
 
 static inline void readRegs(chip8_t* chip8, uint16_t opcode){
-    for(int i = 0; i <= XV(opcode); i++)
+    for(int i = 0; i <= VX(opcode); i++)
         chip8->memory[chip8->I+i] = chip8->V[i];
 }
 
 static inline void writeRegs(chip8_t* chip8, uint16_t opcode){
-    for(int i = 0; i <= XV(opcode); i++)
+    for(int i = 0; i <= VX(opcode); i++)
         chip8->V[i] = chip8->memory[chip8->I+i];
 }
+
+typedef void (*instruction_func)(chip8_t* chip8, uint16_t opcode); //pointer to a instruction function
+instruction_func instructions[INST_COUNT] = {
+    clr, //0
+    ret, //1
+    jpaddr, // .2
+    call, // 3
+    se, // 4
+    sne, // 5
+    sre, // 6
+    load, //7
+    add, //8
+    loadr, //9
+    or, //10
+    and, //11
+    xor, //12
+    addxy, //13
+    sub, //14
+    shr, //15
+    subn, //16
+    shl, //17
+    sne, //18
+    loadI, // 19
+    jmp, //20
+    rnd, //21 
+    draw, //22
+    skip,//23
+    skip_not,//24
+    loadDT,//25
+    loadKey,//26
+    setDT,//27
+    setST,//28
+    addI,//29
+    loadF,//30
+    loadB,//31
+    readRegs,//32
+    writeRegs //33
+};
 
 // ## definitely could have went a better way for decoding
 //Already wrote all the functions and I just need the index for the funcptr, the opcode
@@ -354,5 +356,6 @@ int main(int argc, char* argv){
 
     chip8_t chip8;
     init(&chip8);
+    printf("hello world");
 
 }
